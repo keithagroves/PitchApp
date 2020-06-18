@@ -52,7 +52,7 @@ class MyTest {
 		for (float i = 0; i < 1000; i+=1) {
 			//System.out.println(n.findClosest2(notes, (float)i));
 			//assertEquals(notes[n.findClosest2(notes, (float) i)], notes[n.findClosest(notes, (float) i)]);
-			System.out.print(map.get(notes[n.findClosest2(notes,  i)]) + " : ");
+			//System.out.print(map.get(notes[n.findClosest2(notes,  i)]) + " : ");
 			System.out.println(map.get(notes[n.findClosest(notes,  i)]));
 		}
 	}
