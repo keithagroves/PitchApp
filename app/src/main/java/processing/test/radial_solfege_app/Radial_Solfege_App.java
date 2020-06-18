@@ -8,8 +8,22 @@ import processing.core.PApplet;
 import processing.sound.SinOsc;
 
 public class Radial_Solfege_App extends PApplet {
-
+	NoteAnalyzer noteAnalyzer;
+	int score = 10;
+	int bestScore = 0;
+	float x = 0;
+	float y = 0;
+	int state = 1;
 	// Activity act;
+	public static int A440 = 440;
+	MusicPlayer player;
+
+	Float[] notes;
+	HashMap<Float, String> map = new HashMap<Float, String>();
+	String[] solfege = { "Do", "Re", "Mi", "Fa", "Sol", "La", "Ti" };
+	// String [] solfege = {"Do", "Di", "Re", "Ri", "Mi", "Fa", "Fi", "Sol", "Si",
+	// "La", "Li", "Ti"};
+	
 	public static void main(String[] passedArgs) {
 		String[] appletArgs = new String[] { "--present", "--window-color=#666666", "--stop-color=#cccccc",
 				"processing.test.radial_solfege_app.Radial_Solfege_App" };
@@ -20,26 +34,13 @@ public class Radial_Solfege_App extends PApplet {
 		}
 	}
 
-	public static int A440 = 440;
-
-	Float[] notes;
-	HashMap<Float, String> map = new HashMap<Float, String>();
-	String[] solfege = { "Do", "Re", "Mi", "Fa", "Sol", "La", "Ti" };
-	// String [] solfege = {"Do", "Di", "Re", "Ri", "Mi", "Fa", "Fi", "Sol", "Si", "La", "Li", "Ti"};
-
-
-	SinOsc sine;
-	float x = 0;
-	float y = 0;
-
-	float unitX = 0;
-	float unitY = 0;
 
 	public void settings() {
 		// size(426,900);
 		//size(426, 900);
 		loadInfo();
-		 fullScreen();
+		size(900,500);
+		//fullScreen();
 	}
 
 	float aspectRatio = calculateAspectRatio();
@@ -47,32 +48,33 @@ public class Radial_Solfege_App extends PApplet {
 	float idealH = 900;
 	float scalars;
 
-	NoteAnalyzer noteAnalyzer;
+	
 
 	private float calculateAspectRatio() {
-		return 426f / 900;  // w/h * h = w    w/h * w = h    w/h*w  = 1/h
+		return 426f / 900; // w/h * h = w w/h * w = h w/h*w = 1/h
 	}
-	
+
 	float tempWidth = 0;
 	float tempHeight = 0;
-	
+
 	Demo demo;
+
 	@Override
 	public void setup() {
 		background(255);
 		androidSetup();
 		tempWidth = idealW;
 		tempHeight = idealH;
-		tempHeight = Math.min(width/aspectRatio, height);
+		tempHeight = Math.min(width / aspectRatio, height);
 		tempWidth = tempHeight * aspectRatio;
 		scalars = tempWidth / idealW;
 		idealW = tempWidth;
 		idealH = tempHeight;
-		this.translate((width-idealW)/2,0);
-		
+		this.translate((width - idealW) / 2, 0);
+
 		noteAnalyzer = new NoteAnalyzer(this, notes);
 
-		sine = new SinOsc(this);
+		player = new MusicPlayer(this);
 		frameRate(120);
 		ballX = idealW / 2;
 		ballY = height / 2 + height / 10;
@@ -82,51 +84,56 @@ public class Radial_Solfege_App extends PApplet {
 		strokeCap(SQUARE);
 		demo = new Demo(map);
 	}
-	
+
 	void androidSetup() {
 		// orientation(PORTRAIT);
 		// AndroidPermissionHelper perm = new AndroidPermissionHelper();
 		// perm.androidPermissions(this);
 	}
 
-	int state = 1;
+
+
 	public void draw() {
-		if(state == 0) {
-		this.translate((width-idealW)/2,0);
+		if (state == 0) {
+			this.translate((width - idealW) / 2, 0);
 
-		getNote();
-		scale(scalars);
-		// playSong();
+			getNote();
+			scale(scalars);
+			// playSong();
 
-		if (!mousePressed) {
-			background(0xff1d1e30);
-			drawBackground();
-			drawPaddle(finalAns);
-			drawBall();
-		}
-		if (mousePressed) {
-			sine.play();
-			int i = 0;
-			while (!map.get(notes[i]).equals("C4")) {
-				i++;
-				// println(map.get(notes[i]));
+			if (!mousePressed) {
+				background(0xff1d1e30);
+				drawBackground();
+				drawPaddle(finalAns);
+				drawBall();
 			}
-			sine.freq(notes[i]);
-		} else {
-			sine.stop();
-			if (sus > 30) {
-				sine.stop();
-			} else if (sus <= 30) {
-				// sus++;
+			if (mousePressed) {
+				player.play();
+				int i = 0;
+				while (!map.get(notes[i]).equals("C4")) {
+					i++;
+					// println(map.get(notes[i]));
+				}
+				player.freq(notes[i]);
+			} else {
+				player.stop();
+				if (sus > 30) {
+					player.stop();
+				} else if (sus <= 30) {
+					// sus++;
+				}
 			}
-		}
 		} else {
 			background(200);
 			getNote();
 			demo.practice(this, notes);
 			demo.colorBars(this, noteAnalyzer);
-			
+
 		}
+		textSize(100);
+		text(finalAns, 100,100);
+		textSize(20);
+
 	}
 
 	public void saveData(byte[] writeData, String fileName) {
@@ -240,8 +247,8 @@ public class Radial_Solfege_App extends PApplet {
 	int workLag = 3;
 
 	public void getNote() {
-			if (complete) {
-				thread("getAnswer");
+		if (complete) {
+			thread("getAnswer");
 		}
 	}
 
@@ -350,8 +357,7 @@ public class Radial_Solfege_App extends PApplet {
 		complete = true;
 	}
 
-	int score = 10;
-	int bestScore = 0;
+
 
 	public void drawBackground() {
 		float rad = idealW - idealW / 6;
@@ -398,46 +404,6 @@ public class Radial_Solfege_App extends PApplet {
 			finalAns = ans;
 		}
 	}
-
-	// TESTING GROUNDS
-//Not Working? //Maybe because of the other Thread?
-	int lastNote = 0;
-	long timeSince = 0;
-	String lastNoteDetected = "Do";
-	ArrayList<Long> list = new ArrayList<Long>();
-
-	public void playSong() {
-
-		sine.play();
-		if (frameCount % 60 == 0) {
-			soundIncrement++;
-		}
-		int noteIndex = (soundIncrement) % (notes.length - 35) + 16;
-		int solfegePos = noteIndex % solfege.length;
-		String noteName = solfege[solfegePos];
-		float note = notes[noteIndex];
-		if (solfegePos != lastNote) {
-			lastNote = solfegePos;
-			timeSince = millis();
-		}
-		if (noteName.equals(finalAns) && !lastNoteDetected.equals(finalAns)) {
-			list.add(millis() - timeSince);
-			println("Detect delay: " + (millis() - timeSince));
-			lastNoteDetected = finalAns;
-			long sum = 0;
-			for (long l : list) {
-				sum += l;
-			}
-			println("delay AVG: " + sum / list.size());
-		}
-		sine.freq(note);
-	}
-
-	// Returns element closest to target in arr[]
-
-	
-
-
 
 
 }

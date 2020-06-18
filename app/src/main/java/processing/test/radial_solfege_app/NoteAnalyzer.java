@@ -38,6 +38,10 @@ public class NoteAnalyzer {
          this.notes = notes;
          
          }
+    //Default for testing 
+    public NoteAnalyzer() {
+    	
+    }
     
     void analyze() {
         fft.analyze(spectrum);
@@ -55,16 +59,23 @@ public class NoteAnalyzer {
         }
         HashMap<String, List<? extends Number>> result = peakDetector.analyzeDataForSignals(spectrumData, lag, threshold, influence);
         HashMap<String, Float> noteFreq = new HashMap<String, Float>();
+        
+        //TODO: not all are needed
         List<Integer> signals = (List<Integer>) result.get("signals");
         List<Float> avg = (List<Float>) result.get("avgFilter");
         List<Float> std = (List<Float>) result.get("stdFilter");
         filteredData = (List<Float>) result.get("filteredData");
 
         float highestZ = 0;
-        for (int i = 0; i < signals.size(); i++) {
+        for (int i = 90; i < signals.size(); i++) {
 
             if (signals.get(i) == 1) {
+            	System.out.println((findClosest(notes, i * scale)));
+            	System.out.println(i*scale);
+            	System.out.println((findClosest(notes, i * scale)));
                 String thing = solfege[(findClosest(notes, i * scale)) % solfege.length];
+                if(thing.equals("Sol"))
+                	System.out.println("break");
                 if (noteFreq.get(thing) == null) {
                     noteFreq.put(thing, spectrum[i] - avg.get(i));
                 } else {
@@ -93,9 +104,11 @@ public class NoteAnalyzer {
                 highestFreq = tempNote;
             }
         }
-        //println(noteFreq);
+        System.out.println(noteFreq);
 
         String filtered = overtoneFilter(noteFreq, highestFreq, secondHighest);
+        
+        //TODO remove this
         if (filtered.equals(solfege[lastChoice])) {
             if (averageCorrectZ > 0) {
                 if (averageCorrectZ == 0) {
@@ -111,6 +124,14 @@ public class NoteAnalyzer {
         return filtered;
     }
     
+    
+    /**
+     * 
+     * @param noteFreq A hashmap of solfege notes and the frequency of signals
+     * @param highest The frequency with the strongest signal
+     * @param secondHighest The frequency with second strongest signal.
+     * @return
+     */
     public String overtoneFilter(HashMap<String, Float> noteFreq, String highest, String secondHighest) {
         for (int i = 0; i < noteFreq.entrySet().size(); i++) {
             if (secondHighest.equals(solfege[i]) && highest.equals(solfege[(i + (solfege.length / 2 + 1)) % solfege.length]) && noteFreq.get(highest) >= noteFreq.get(secondHighest) / 2) {
@@ -120,36 +141,15 @@ public class NoteAnalyzer {
         return highest;
     }
     public int findClosest(Float arr[], float target) {
-        int n = arr.length;
-        if (target <= arr[0])
-            return 0;
-        if (target >= arr[n - 1])
-            return n - 1;
-        int i = 0, j = n, mid = 0;
-        while (i < j) {
-            mid = (i + j) / 2;
-            if (arr[mid] == target)
-                return mid;
-            if (target < arr[mid]) {
-                if (mid > 0 && target > arr[mid - 1])
-                    return getClosest(mid - 1, mid, target, arr);
-                j = mid;
-            } else {
-                if (mid < n - 1 && target < arr[mid + 1])
-                    return getClosest(mid,
-                            mid + 1, target, arr);
-                i = mid + 1; // update i
-            }
-        }
-        return mid;
+    	double calc = 57 + 12 * log2(target/440.0);
+    	return Math.min(Math.max((int)Math.round(calc),0), arr.length-1);
     }
 
-    public int getClosest(int val1, int val2, float target, Float[] arr) {
-        if (target - arr[val1] >= arr[val2] - target)
-            return val2;
-        else
-            return val1;
+    public static final double log2(double f)
+    {
+        return (Math.log(f)/Math.log(2.0));
     }
+   
 
 
 }
