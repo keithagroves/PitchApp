@@ -67,7 +67,6 @@ public class CustomFourierMath {
 
     private static class BitReverseTable {
         int[] reversedBits;
-
         BitReverseTable(int numBits) {
             reversedBits = new int[1 << numBits];
             for (int i = 0; i < reversedBits.length; i++) {
@@ -77,7 +76,6 @@ public class CustomFourierMath {
 
         static int reverseBits(int index, int numBits) {
             int i, rev;
-
             for (i = rev = 0; i < numBits; i++) {
                 rev = (rev << 1) | (index & 1);
                 index >>= 1;
@@ -118,7 +116,7 @@ public class CustomFourierMath {
      */
     public static void calculateMagnitudes(float ar[], float ai[], float[] magnitudes) {
         for (int i = 0; i < magnitudes.length; ++i) {
-            magnitudes[i] = (float) Math.sqrt((ar[i] * ar[i]) + (ai[i] * ai[i]));
+            magnitudes[i] = 2 * (float) Math.sqrt((ar[i] * ar[i]) + (ai[i] * ai[i]));
         }
     }
 
@@ -203,11 +201,12 @@ public class CustomFourierMath {
                 for (i = m; i < n; i += stride) {
                     j = i + mmax;
                     float tr = (wr * ar[j]) - (wi * ai[j]);
-                    float ti = (wr * ai[j]) + (wi * ar[j]);
+                    float ti = (wr * ai[j]) + (wi * ar[j]); 
                     ar[j] = ar[i] - tr;
                     ai[j] = ai[i] - ti;
                     ar[i] += tr;
                     ai[i] += ti;
+                   
                 }
 
                 phase = (phase + phaseIncrement) & mask;
@@ -237,7 +236,7 @@ public class CustomFourierMath {
      * @param ar
      * @param ai
      */
-    public static void fft(int n, double ar[], double ai[]) {
+    public static void fft(int n, float ar[], float ai[]) {
         transform(1, n, ar, ai); // TODO -1 or 1
     }
 

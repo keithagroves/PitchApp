@@ -4,38 +4,34 @@ import com.jsyn.data.FloatSample;
 import com.jsyn.unitgen.FixedRateMonoWriter;
 import com.softsynth.math.FourierMath;
 
+import processing.test.radial_solfege_app.NoteAnalyzer;
+
 import java.util.Arrays;
 
 public class CustomJSynFFT extends FixedRateMonoWriter {
 
     private FloatSample buffer;
-    private double[] real;
-    private double[] imaginary;
-    private double[] magnitude;
+    private float[] real;
+    private float[] imaginary;
 
     protected CustomJSynFFT(int bufferSize) {
         super();
         this.buffer = new FloatSample(bufferSize);
-        this.real = new double[bufferSize];
-        this.imaginary = new double[bufferSize];
-        this.magnitude = new double[bufferSize / 2];
-
+        this.real = new float[bufferSize];
+        this.imaginary = new float[bufferSize];
         // write any connected input into the output buffer ad infinitum
         this.dataQueue.queueLoop(this.buffer);
     }
 
-    protected void calculateMagnitudes(float[] target) {
+    protected String calculateMagnitudes(float[] target) {
         // get position currently being written to
         int pos = (int) this.dataQueue.getFrameCount() % this.buffer.getNumFrames();
         for (int i = 0; i < this.buffer.getNumFrames(); i++) {
-            // TODO could apply window?
-            this.real[i] = this.buffer.readDouble((pos + i) % this.buffer.getNumFrames());
+            this.real[i] = (float) this.buffer.readDouble((pos + i) % this.buffer.getNumFrames());
         }
         Arrays.fill(this.imaginary, 0);
-        FourierMath.fft(this.real.length, this.real, this.imaginary);
-        FourierMath.calculateMagnitudes(this.real, this.imaginary, this.magnitude);
-        for (int i = 0; i < target.length; i++) {
-            target[i] = (float) (2 * this.magnitude[i]);
-        }
+        CustomFourierMath.fft(this.real.length, this.real, this.imaginary);
+        return NoteAnalyzer.peakDetection(this.real, this.imaginary, target);
+        //CustomFourierMath.calculateMagnitudes(this.real, this.imaginary, target);
     }
 }

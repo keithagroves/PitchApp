@@ -11,7 +11,7 @@ public class CustomFFT extends Analyzer{
     private CustomJSynFFT fft;
 
     public CustomFFT(PApplet parent) {
-        this(parent, 512);
+        this(parent, 512, 512);
     }
 
     /**
@@ -23,7 +23,7 @@ public class CustomFFT extends Analyzer{
      *            ...).
      * @webref sound
      */
-    public CustomFFT(PApplet parent, int bands) {
+    public CustomFFT(PApplet parent, int bands, int spectrumSize) {
         super(parent);
         if (bands < 0 || Integer.bitCount(bands) != 1) {
             // TODO throw RuntimeException?
@@ -31,7 +31,7 @@ public class CustomFFT extends Analyzer{
         } else {
             // FFT buffer size is twice the number of frequency bands
             this.fft = new CustomJSynFFT(2 * bands);
-            this.spectrum = new float[bands];
+            this.spectrum = new float[spectrumSize];
         }
     }
 
@@ -54,7 +54,7 @@ public class CustomFFT extends Analyzer{
      * @return the current frequency spectrum of the input source. The array has as
      *         many elements as this FFT analyzer's number of frequency bands
      */
-    public float[] analyze() {
+    public String analyze() {
         return this.analyze(this.spectrum);
     }
 
@@ -68,12 +68,12 @@ public class CustomFFT extends Analyzer{
      *         many elements as this FFT analyzer's number of frequency bands.
      * @webref sound
      **/
-    public float[] analyze(float[] value) {
+    public String analyze(float[] value) {
         if (this.input == null) {
             Engine.printWarning("this FFT has no sound source connected to it, nothing to analyze");
         }
-        this.fft.calculateMagnitudes(value);
-        return value;
+        return this.fft.calculateMagnitudes(value);
+       
     }
 
     // Below are just duplicated methods from superclasses which are required

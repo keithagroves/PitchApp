@@ -314,9 +314,9 @@ public class Radial_Solfege_App extends PApplet {
 
 	public synchronized void getAnswer() {
 		complete = false;
-		noteAnalyzer.analyze();
-		String ans = noteAnalyzer.peakDetection(z, influence);
-		bufferAnswer(ans);
+		String ans = noteAnalyzer.analyze();
+		//String ans = noteAnalyzer.peakDetection(z, influence);
+		//bufferAnswer(ans);
 		complete = true;
 	}
 

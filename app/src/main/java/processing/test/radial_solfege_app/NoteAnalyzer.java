@@ -20,13 +20,13 @@ public class NoteAnalyzer {
 	HashMap<Float, String> map = new HashMap<Float, String>();
 	AudioIn in;
 	CustomFFT fft;
-	Float[] notes;
+	static Float[] notes;
 
 	static int lastChoice = 0;
 
 
 	public NoteAnalyzer(PApplet app, Float[] notes) {
-		fft = new CustomFFT(app, BANDS);
+		fft = new CustomFFT(app, BANDS, SPECTRUM_LENGTH);
 		in = new AudioIn(app, 0);
 		// start the Audio Input
 		in.start();
@@ -41,17 +41,18 @@ public class NoteAnalyzer {
 
 	}
 
-	void analyze() {
-		fft.analyze(spectrum);
+	public String analyze() {
+		return fft.analyze(spectrum);
+		
 	}
 
-	public String peakDetection(float threshold, float influence) {
+	public static String peakDetection(float[] real, float[] imagined, float [] spectrum) {
 		String highestFreq = "";
 		String secondHighest = "";
 		Float highest = 0.0f;
-		System.out.println("LENG:"+spectrum.length);
 		HashMap<String, Float> noteFreq = new HashMap<String, Float>();
 		for (int i = MIN_BAND; i < spectrum.length; i++) {
+			spectrum[i] = 2 * (float) Math.sqrt((real[i] * real[i]) + (imagined[i] * imagined[i]));
 			String thing = SOLFEGE[(findClosest(notes, i * SCALE)) % SOLFEGE.length];
 			if ((noteFreq.get(thing) == null || noteFreq.get(thing) < spectrum[i]) && spectrum[i]> 0.0001) {
 				noteFreq.put(thing, spectrum[i]);
@@ -73,7 +74,7 @@ public class NoteAnalyzer {
 	 * @param secondHighest The frequency with second strongest signal.
 	 * @return
 	 */
-	public String overtoneFilter(Map<String, Float> noteFreq, String highest, String secondHighest) {
+	public static String overtoneFilter(Map<String, Float> noteFreq, String highest, String secondHighest) {
 		for (int i = 0; i < noteFreq.entrySet().size(); i++) {
 			if (secondHighest.equals(SOLFEGE[i])
 					&& highest.equals(SOLFEGE[(i + (SOLFEGE.length / 2 + 1)) % SOLFEGE.length])
@@ -84,7 +85,7 @@ public class NoteAnalyzer {
 		return highest;
 	}
 
-	public int findClosest(Float arr[], float target) {
+	public static int findClosest(Float arr[], float target) {
 		double calc = 57 + 12 * log2(target / 440.0);
 		return Math.min(Math.max((int) Math.round(calc), 0), arr.length - 1);
 	}
