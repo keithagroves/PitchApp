@@ -29,6 +29,9 @@ class Demo {
 			float spec = 27.5f;
 			float prevSpec = 0;
 			float interval = 27.5f;
+			app.line(0, app.height - 0.002f * app.height * amplify,app.width, app.height - 0.002f * app.height * amplify);
+			//app.line(0, app.height - NoteAnalyzer.mean * app.height * amplify,app.width, app.height - NoteAnalyzer.mean * app.height * amplify);
+
 			for (int i = 0; i < noteAnalyzer.spectrum.length; i++) {
 				app.strokeWeight(2);
 
@@ -43,6 +46,7 @@ class Demo {
 						app.stroke(f, spec, spec);
 						interval *= 1.06f;
 					}
+					
 					app.line(i * scale, app.height, i * scale, app.height - noteAnalyzer.spectrum[i] * app.height * amplify);
 				}
 				app.colorMode(PApplet.RGB, 255);
