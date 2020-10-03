@@ -15,7 +15,7 @@ public class AndroidPermissionHelper {
         //Android stuff
         act = app.getActivity();
         this.act = act;
-        // PermissionRequestor re;
+        //PermissionRequestor re;
         if (maVersion > Build.VERSION_CODES.LOLLIPOP_MR1) {//verifier API
             if (!permissionsDejaAccordees()) {//ne pas redemander si la permission a déjà été accordée
                 demandePermissionParticuliere();//sinon, demander....

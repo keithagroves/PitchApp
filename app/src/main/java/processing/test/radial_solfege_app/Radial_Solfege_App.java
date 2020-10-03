@@ -1,6 +1,7 @@
 package processing.test.radial_solfege_app;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 import processing.core.PApplet;
@@ -13,6 +14,14 @@ public class Radial_Solfege_App extends PApplet {
 	private MusicPlayer player;
 	private float move = 0;
 	// increase speed as they hold the note?
+	final static int DO = 0;
+	final static int RE = 2;
+	final static int MI = 4;
+	final static int FA = 5;
+	final static int SOL = 7;
+	final static int LA = 9;
+	final static int TI = 11;
+	
 	private float defSpeed = PI / 30;
 	private float speed = PI / 30;
 	private float start = 0;
@@ -20,19 +29,15 @@ public class Radial_Solfege_App extends PApplet {
 	private float tempWidth = 0;
 	private float tempHeight = 0;
 	private float aspectRatio = calculateAspectRatio();
-	private float idealW = 426;
-	private float idealH = 900;
+	private static final float idealW = 426;
+	private static final float idealH = 900;
 	private float scalars;
 	private Demo demo;
 	private int tail = 0;
 	private float z = 15; // 21 // 4.342 // start low and increase. depending on results
-	private float influence = 0; // 0.3
-	private int countAns = 0;
-	private String prevAns = "Do";
 	private String finalAns = "Do";
 	private float ballX = 0;
 	private float ballY = 0;
-	private int sus = 31;
 	private boolean complete = true;
 	private float newX = 0;
 	private float newY = 0;
@@ -42,44 +47,33 @@ public class Radial_Solfege_App extends PApplet {
 	private float ballSpeedY = 1;
 	private float ballSpeed = 2f;
 	private long lastHit = 0;
-
+	public static final int[] song = { DO, SOL, DO, SOL, DO, SOL, DO, MI, SOL, DO, MI, SOL, DO, MI, SOL, DO, FA, SOL, FA, MI, RE, DO};
+	
 	HashMap<Float, String> map = new HashMap<Float, String>();
 
-	public static void main(String[] passedArgs) {
-		String[] appletArgs = new String[] { "--present", "--window-color=#666666", "--stop-color=#cccccc",
-				"processing.test.radial_solfege_app.Radial_Solfege_App" };
-		if (passedArgs != null) {
-			PApplet.main(concat(appletArgs, passedArgs));
-		} else {
-			PApplet.main(appletArgs);
-		}
-	}
 
 	@Override
 	public void settings() {
-		size(426, 900);
-		loadInfo();
+		//size(426, 900);
 		// size(900, 500);
 		fullScreen();
 	}
+
 	@Override
 	public void setup() {
+		loadInfo();
 		background(255);
 		androidSetup();
 		tempWidth = idealW;
 		tempHeight = idealH;
 		tempHeight = Math.min(width / aspectRatio, height);
-		tempWidth = tempHeight * aspectRatio;
+		tempWidth = width;
 		scalars = tempWidth / idealW;
-		idealW = tempWidth;
-		idealH = tempHeight;
-		this.translate((width - idealW) / 2, 0);
+		//idealW = tempWidth;
+		//idealH = tempHeight;
+		//this.translate((width - idealW) / 2, 0);
 		player = new MusicPlayer(this);
-		
 		noteAnalyzer = new NoteAnalyzer(this, notes);
-
-		
-		//frameRate(60);
 		ballX = idealW / 2;
 		ballY = height / 2 + height / 10;
 		radius = (idealW - idealW / 4) / 2;
@@ -87,16 +81,14 @@ public class Radial_Solfege_App extends PApplet {
 		setupBall();
 		strokeCap(SQUARE);
 		demo = new Demo(map);
-		scale(scalars);
 	}
-
-
 
 	@Override
 	public void draw() {
-		player.playSong(frameCount, notes, NoteAnalyzer.SOLFEGE, finalAns);
+		scale(scalars);
+		//player.playSong(frameCount, notes, NoteAnalyzer.SOLFEGE, finalAns);
 		if (state == 0) {
-			this.translate((width - idealW) / 2, 0);
+			//this.translate((width - idealW) / 2, 0);
 			getNote();
 			if (!mousePressed) {
 				background(0xff1d1e30);
@@ -109,16 +101,15 @@ public class Radial_Solfege_App extends PApplet {
 				int i = 0;
 				while (!map.get(notes[i]).equals("C4")) {
 					i++;
-					// println(map.get(notes[i]));
 				}
 				player.freq(notes[i]);
 			} else {
-				//player.stop();
-				//if (sus > 30) {
-				//	player.stop();
-				//} else if (sus <= 30) {
-				//	// sus++;
-				//}
+				player.stop();
+				// if (sus > 30) {
+				// player.stop();
+				// } else if (sus <= 30) {
+				// // sus++;
+				// }
 			}
 
 		} else {
@@ -138,9 +129,9 @@ public class Radial_Solfege_App extends PApplet {
 	}
 
 	void androidSetup() {
-		// orientation(PORTRAIT);
-		// AndroidPermissionHelper perm = new AndroidPermissionHelper();
-		// perm.androidPermissions(this);
+		orientation(PORTRAIT);
+		AndroidPermissionHelper perm = new AndroidPermissionHelper();
+		perm.androidPermissions(this);
 	}
 
 	public void saveData(byte[] writeData, String fileName) {
@@ -159,6 +150,7 @@ public class Radial_Solfege_App extends PApplet {
 		setDirection(randomSolfege);
 	}
 
+	float level = 5000; //40
 	public void drawPaddle(String ans) {
 		noFill();
 		int i = findIndex(NoteAnalyzer.SOLFEGE, ans);
@@ -191,10 +183,10 @@ public class Radial_Solfege_App extends PApplet {
 			speed = 0;
 		}
 		float offset = (HALF_PI - increments / 2) + PI;
-		strokeWeight(5 * scalars);
+		strokeWeight(2 * (width/idealW));
 		stroke(255);
-		start = move + offset + PI / 40;
-		end = increments + move + offset - PI / 40;
+		start = move + offset + PI / level;
+		end = increments + move + offset - PI / level;
 		arc(idealW / 2, idealH / 2 + idealH / 10, 2 * (idealW / 3), 2 * (idealW / 3), start, end);
 	}
 
@@ -227,8 +219,8 @@ public class Radial_Solfege_App extends PApplet {
 		}
 	}
 
-	public  void getNote() {
-		
+	public void getNote() {
+
 		if (complete) {
 			thread("getAnswer");
 		}
@@ -237,9 +229,6 @@ public class Radial_Solfege_App extends PApplet {
 	public boolean intersects() {
 		float centerX = cos((start + end) / 2) * radius + idealW / 2;
 		float centerY = sin((start + end) / 2) * radius + idealH / 2 + idealH / 10;
-		// fill(255, 100);
-		// ellipse(sin(start)*(2*idealW/3),
-		// cos(start)*2*(idealW/3),sin(end)*(2*idealW/3), cos(end)*2*(idealW/3))
 		// The ball is close to the paddle? (the distance from the center of the paddle
 		// is less than the length of the paddle.)
 		if (millis() - lastHit > 1000)
@@ -251,6 +240,7 @@ public class Radial_Solfege_App extends PApplet {
 				sin(end) * (idealW / 3) + idealH / 2 + idealH / 10);
 	}
 
+	int num =0;
 	public void drawBall() {
 		noStroke();
 		fill(255, 100);
@@ -260,19 +250,15 @@ public class Radial_Solfege_App extends PApplet {
 			int randomSolfege = 0;
 			tail = 0;
 
-			do {
-				randomSolfege = (NoteAnalyzer.lastChoice + (int) random(2, NoteAnalyzer.SOLFEGE.length - 1))
-						% NoteAnalyzer.SOLFEGE.length;
-			} while (randomSolfege == NoteAnalyzer.lastChoice);
+//			do {
+//				randomSolfege = (NoteAnalyzer.lastChoice + (int) random(2, NoteAnalyzer.SOLFEGE.length - 1))
+//						% NoteAnalyzer.SOLFEGE.length;
+//			} while (randomSolfege == NoteAnalyzer.lastChoice);
+			
+			setDirection(song[++num%song.length]);
 			sb.givePoint();
-			// sine.play();
-			// println("solfege"+randomSolfege);
-			// sine.freq(notes[28+lastChoice]);
-			NoteAnalyzer.lastChoice = randomSolfege;
-			// find x and y
-			setDirection(randomSolfege);
+			//NoteAnalyzer.lastChoice = randomSolfege;
 
-			sus = 0;
 		} else if (dist(idealW / 2, idealH / 2 + idealH / 10, ballX + ballSpeedX, ballY + ballSpeedY) > radius) {
 			ballX = idealW / 2;
 			ballY = idealH / 2 + idealH / 10;
@@ -280,9 +266,6 @@ public class Radial_Solfege_App extends PApplet {
 			setDirection(0);
 			sb.reset();
 
-			// sine.play();
-			// sine.freq(notes[35]);
-			sus = 0;
 		} else {
 			ballX += ballSpeedX;
 			ballY += ballSpeedY;
@@ -314,9 +297,8 @@ public class Radial_Solfege_App extends PApplet {
 
 	public synchronized void getAnswer() {
 		complete = false;
-		String ans = noteAnalyzer.analyze();
-		//String ans = noteAnalyzer.peakDetection(z, influence);
-		//bufferAnswer(ans);
+		finalAns = noteAnalyzer.analyze();
+		// bufferAnswer(ans);
 		complete = true;
 	}
 
@@ -356,16 +338,16 @@ public class Radial_Solfege_App extends PApplet {
 		ellipse(idealW / 2, idealH / 2 + idealH / 10, idealW - idealW / 4, idealW - idealW / 4);
 	}
 
-	public void bufferAnswer(String ans) {
-		if (ans.equals(prevAns) && !ans.equals("")) {
-			countAns++;
-		} else {
-			countAns = 0;
-			prevAns = ans;
-		}
-		if (countAns >= 2) {
-			finalAns = ans;
-		}
-	}
+//	public void bufferAnswer(String ans) {
+//		if (ans.equals(prevAns) && !ans.equals("")) {
+//			countAns++;
+//		} else {
+//			countAns = 0;
+//			prevAns = ans;
+//		}
+//		if (countAns >= 2) {
+//			finalAns = ans;
+//		}
+//	}
 
 }

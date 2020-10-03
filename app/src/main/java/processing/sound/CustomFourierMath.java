@@ -16,6 +16,8 @@
 
 package processing.sound;
 
+import processing.test.radial_solfege_app.NoteAnalyzer;
+
 //Simple Fast Fourier Transform.
 public class CustomFourierMath {
     static private final int MAX_SIZE_LOG_2 = 16;
@@ -166,10 +168,10 @@ public class CustomFourierMath {
             mmax = stride;
         }
     }
-
+    
     public static void transform(int sign, int n, float ar[], float ai[]) {
         float scale = (sign > 0) ? (2.0f / n) : (0.5f);
-
+        
         int numBits = CustomFourierMath.numBits(n);
         int[] reverseTable = getReverseTable(numBits);
         float[] sineTable = getFloatSineTable(numBits);
@@ -194,10 +196,10 @@ public class CustomFourierMath {
         for (mmax = 1, stride = 2 * mmax; mmax < n; mmax = stride, stride = 2 * mmax) {
             int phase = 0;
             int phaseIncrement = numerator / (2 * mmax);
-            for (int m = 0; m < mmax; ++m) {
+            for (int m = 0; m < mmax && m <= NoteAnalyzer.SPECTRUM_LENGTH; ++m) {
                 float wr = sineTable[(phase + cosineOffset) & mask]; // cosine
                 float wi = sineTable[phase];
-
+                //custom
                 for (i = m; i < n; i += stride) {
                     j = i + mmax;
                     float tr = (wr * ar[j]) - (wi * ai[j]);
