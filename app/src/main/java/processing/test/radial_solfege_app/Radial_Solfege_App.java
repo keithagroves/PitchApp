@@ -54,9 +54,9 @@ public class Radial_Solfege_App extends PApplet {
 
 	@Override
 	public void settings() {
-		//size(426, 900);
+		size(426, 900);
 		// size(900, 500);
-		fullScreen();
+		//fullScreen();
 	}
 
 	@Override
@@ -129,9 +129,9 @@ public class Radial_Solfege_App extends PApplet {
 	}
 
 	void androidSetup() {
-		orientation(PORTRAIT);
-		AndroidPermissionHelper perm = new AndroidPermissionHelper();
-		perm.androidPermissions(this);
+//		orientation(PORTRAIT);
+//		AndroidPermissionHelper perm = new AndroidPermissionHelper();
+//		perm.androidPermissions(this);
 	}
 
 	public void saveData(byte[] writeData, String fileName) {

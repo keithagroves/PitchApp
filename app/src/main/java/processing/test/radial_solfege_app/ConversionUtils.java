@@ -22,6 +22,18 @@ class ConversionUtils {
 			return ByteBuffer.wrap(bytes).getFloat();
 		}
 
+		//000
+		//001
+		//010
+		//011
+		//100
+		
+		//1
+		//0
+		//1
+		//0
+
+		
 		// change to byte arr to float arr.
 		public static float[] convertByteArraytoFloatArray(byte[] loadData) {
 			byte[] floatData = new byte[Float.BYTES];

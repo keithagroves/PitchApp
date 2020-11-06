@@ -1,10 +1,12 @@
 package processing.test.radial_solfege_app;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 import processing.core.PApplet;
 import processing.sound.AudioIn;
@@ -16,7 +18,7 @@ public class NoteAnalyzer {
 	public static final int MIN_BAND = 85;
 	public static final float SCALE = 1.3455657492f;
 	float[] spectrum = new float[SPECTRUM_LENGTH];
-	
+
 	public static final String[] SOLFEGE = { "Do", "Di", "Re", "Ri", "Mi", "Fa", "Fi", "Sol", "Si", "La", "Li", "Ti" };
 	public static final String[] SOLFEGE_MAJOR = { "Do", "Re", "Mi", "Fa", "Sol", "La", "Ti" };
 	HashMap<Float, String> map = new HashMap<Float, String>();
@@ -43,6 +45,16 @@ public class NoteAnalyzer {
 	}
 
 	public String analyze() {
+		try {
+			PrintWriter pw = new PrintWriter(new File("data.txt"));
+			for (int i = 0; i < spectrum.length; i++) {
+				pw.print(spectrum[i] + ",");
+			}
+			pw.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
 		return fft.analyze(spectrum);
 	}
 
@@ -53,26 +65,23 @@ public class NoteAnalyzer {
 		String followingSyllable = "";
 		Float highest = 0.0f;
 		noteFreq.clear();
-
+		int highestIndex = 0;
 		for (int i = MIN_BAND; i < spectrum.length; i++) {
 			spectrum[i] = (float) (2 * Math.sqrt((real[i] * real[i]) + (imagined[i] * imagined[i]))); // 25 millis
 			String noteFound = SOLFEGE[(findClosest(notes, i * SCALE)) % SOLFEGE.length]; // 13 millis
 			if (spectrum[i] > 0.001 && (noteFreq.get(noteFound) == null || noteFreq.get(noteFound) < spectrum[i])) { // 13
-																														// millis
 				noteFreq.put(noteFound, spectrum[i]);
 				// get the highest amplitude
-
 				if (spectrum[i] >= highest) {
 					highest = spectrum[i];
+					highestIndex = i;
 					if (!leadingSyllable.equals(noteFound)) {
 						followingSyllable = leadingSyllable;
 					}
 					leadingSyllable = noteFound;
 				}
-
 			}
 		}
-
 		return overtoneFilter(noteFreq, leadingSyllable, followingSyllable);
 	}
 
@@ -84,9 +93,7 @@ public class NoteAnalyzer {
 	 * @return
 	 */
 	public static String overtoneFilter(Map<String, Float> noteFreq, String highest, String secondHighest) {
-
 		for (int i = 0; i < noteFreq.entrySet().size(); i++) {
-
 			if (secondHighest.equals(SOLFEGE[i])
 					&& highest.equals(SOLFEGE[(i + (SOLFEGE.length / 2 + 1)) % SOLFEGE.length])
 					&& Math.pow(noteFreq.get(secondHighest), -0.001) >= noteFreq.get(highest)) {

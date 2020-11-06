@@ -182,6 +182,7 @@ public class CustomFourierMath {
         for (i = 0; i < n; i++) {
             j = reverseTable[i];
             if (j >= i) {
+            	//multiplied by 2.0/// for some reason
                 float tempr = ar[j] * scale;
                 float tempi = ai[j] * scale;
                 ar[j] = ar[i] * scale;
@@ -196,9 +197,10 @@ public class CustomFourierMath {
         for (mmax = 1, stride = 2 * mmax; mmax < n; mmax = stride, stride = 2 * mmax) {
             int phase = 0;
             int phaseIncrement = numerator / (2 * mmax);
+            //modified to reduce spectrum 
             for (int m = 0; m < mmax && m <= NoteAnalyzer.SPECTRUM_LENGTH; ++m) {
                 float wr = sineTable[(phase + cosineOffset) & mask]; // cosine
-                float wi = sineTable[phase];
+                float wi = sineTable[phase]; //sine?
                 //custom
                 for (i = m; i < n; i += stride) {
                     j = i + mmax;
@@ -208,9 +210,7 @@ public class CustomFourierMath {
                     ai[j] = ai[i] - ti;
                     ar[i] += tr;
                     ai[i] += ti;
-                   
                 }
-
                 phase = (phase + phaseIncrement) & mask;
             }
             mmax = stride;

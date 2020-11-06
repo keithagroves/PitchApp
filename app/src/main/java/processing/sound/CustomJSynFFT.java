@@ -28,7 +28,7 @@ public class CustomJSynFFT extends FixedRateMonoWriter {
 		for (int i = 0; i < this.buffer.getNumFrames(); i++) {
 			this.real[i] = (float) this.buffer.readDouble((pos + i) % this.buffer.getNumFrames());
 		}
-		Arrays.fill(this.imaginary, 0);
+		//Arrays.fill(this.imaginary, 0);
 		CustomFourierMath.fft(this.real.length, this.real, this.imaginary);
 		return NoteAnalyzer.peakDetection(this.real, this.imaginary, target);
 	}

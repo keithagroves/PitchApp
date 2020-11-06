@@ -26,7 +26,6 @@ public class CustomFFT extends Analyzer{
     public CustomFFT(PApplet parent, int bands, int spectrumSize) {
         super(parent);
         if (bands < 0 || Integer.bitCount(bands) != 1) {
-            // TODO throw RuntimeException?
             Engine.printError("number of FFT bands needs to be a power of 2");
         } else {
             // FFT buffer size is twice the number of frequency bands
