@@ -45,6 +45,10 @@ public class NoteAnalyzer {
 	}
 
 	public String analyze() {
+		return fft.analyze(spectrum);
+	}
+	
+	public void writeSoundDataToFile() {
 		try {
 			PrintWriter pw = new PrintWriter(new File("data.txt"));
 			for (int i = 0; i < spectrum.length; i++) {
@@ -54,8 +58,6 @@ public class NoteAnalyzer {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-
-		return fft.analyze(spectrum);
 	}
 
 	static HashMap<String, Float> noteFreq = new HashMap<String, Float>();

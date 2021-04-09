@@ -46,16 +46,6 @@ public class CustomFFT extends Analyzer{
         this.fft.start();
     }
 
-    /**
-     * Calculates the current frequency spectrum from the input source, writes it
-     * into this FFT's `spectrum` array, and returns it.
-     *
-     * @return the current frequency spectrum of the input source. The array has as
-     *         many elements as this FFT analyzer's number of frequency bands
-     */
-    public String analyze() {
-        return this.analyze(this.spectrum);
-    }
 
     /**
      * Calculates the current frequency spectrum from the input source.

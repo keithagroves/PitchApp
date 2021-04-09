@@ -21,7 +21,7 @@ public class Radial_Solfege_App extends PApplet {
 	final static int SOL = 7;
 	final static int LA = 9;
 	final static int TI = 11;
-	
+
 	private float defSpeed = PI / 30;
 	private float speed = PI / 30;
 	private float start = 0;
@@ -47,16 +47,16 @@ public class Radial_Solfege_App extends PApplet {
 	private float ballSpeedY = 1;
 	private float ballSpeed = 2f;
 	private long lastHit = 0;
-	public static final int[] song = { DO, SOL, DO, SOL, DO, SOL, DO, MI, SOL, DO, MI, SOL, DO, MI, SOL, DO, FA, SOL, FA, MI, RE, DO};
-	
-	HashMap<Float, String> map = new HashMap<Float, String>();
+	public static final int[] song = { DO, SOL, DO, SOL, DO, SOL, DO, MI, SOL, DO, MI, SOL, DO, MI, SOL, DO, FA, SOL,
+			FA, MI, RE, DO };
 
+	HashMap<Float, String> map = new HashMap<Float, String>();
 
 	@Override
 	public void settings() {
 		size(426, 900);
 		// size(900, 500);
-		//fullScreen();
+		// fullScreen();
 	}
 
 	@Override
@@ -69,9 +69,9 @@ public class Radial_Solfege_App extends PApplet {
 		tempHeight = Math.min(width / aspectRatio, height);
 		tempWidth = width;
 		scalars = tempWidth / idealW;
-		//idealW = tempWidth;
-		//idealH = tempHeight;
-		//this.translate((width - idealW) / 2, 0);
+		// idealW = tempWidth;
+		// idealH = tempHeight;
+		// this.translate((width - idealW) / 2, 0);
 		player = new MusicPlayer(this);
 		noteAnalyzer = new NoteAnalyzer(this, notes);
 		ballX = idealW / 2;
@@ -86,9 +86,9 @@ public class Radial_Solfege_App extends PApplet {
 	@Override
 	public void draw() {
 		scale(scalars);
-		//player.playSong(frameCount, notes, NoteAnalyzer.SOLFEGE, finalAns);
+		// player.playSong(frameCount, notes, NoteAnalyzer.SOLFEGE, finalAns);
 		if (state == 0) {
-			//this.translate((width - idealW) / 2, 0);
+			// this.translate((width - idealW) / 2, 0);
 			getNote();
 			if (!mousePressed) {
 				background(0xff1d1e30);
@@ -150,7 +150,8 @@ public class Radial_Solfege_App extends PApplet {
 		setDirection(randomSolfege);
 	}
 
-	float level = 5000; //40
+	float level = 5000; // 40
+
 	public void drawPaddle(String ans) {
 		noFill();
 		int i = findIndex(NoteAnalyzer.SOLFEGE, ans);
@@ -183,7 +184,7 @@ public class Radial_Solfege_App extends PApplet {
 			speed = 0;
 		}
 		float offset = (HALF_PI - increments / 2) + PI;
-		strokeWeight(2 * (width/idealW));
+		strokeWeight(2 * (width / idealW));
 		stroke(255);
 		start = move + offset + PI / level;
 		end = increments + move + offset - PI / level;
@@ -240,7 +241,8 @@ public class Radial_Solfege_App extends PApplet {
 				sin(end) * (idealW / 3) + idealH / 2 + idealH / 10);
 	}
 
-	int num =0;
+	int num = 0;
+
 	public void drawBall() {
 		noStroke();
 		fill(255, 100);
@@ -254,10 +256,10 @@ public class Radial_Solfege_App extends PApplet {
 //				randomSolfege = (NoteAnalyzer.lastChoice + (int) random(2, NoteAnalyzer.SOLFEGE.length - 1))
 //						% NoteAnalyzer.SOLFEGE.length;
 //			} while (randomSolfege == NoteAnalyzer.lastChoice);
-			
-			setDirection(song[++num%song.length]);
+
+			setDirection(song[++num % song.length]);
 			sb.givePoint();
-			//NoteAnalyzer.lastChoice = randomSolfege;
+			// NoteAnalyzer.lastChoice = randomSolfege;
 
 		} else if (dist(idealW / 2, idealH / 2 + idealH / 10, ballX + ballSpeedX, ballY + ballSpeedY) > radius) {
 			ballX = idealW / 2;
